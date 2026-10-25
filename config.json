@@ -1,0 +1,9 @@
+{
+  "adb_path": "D:/LDPlayer/LDPlayer9/adb.exe",
+  "ref_resolution": [1280, 720],
+  "match_threshold": 0.85,
+  "poll_interval": 0.7,
+  "jitter_px": 6,
+  "delay_range": [0.15, 0.45],
+  "serials": ["emulator-5554", "emulator-5556", "emulator-5558", "emulator-5560"]
+}
