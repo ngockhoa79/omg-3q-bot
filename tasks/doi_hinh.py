@@ -73,40 +73,74 @@ def handle_doi_hinh_screen(dev, ctx) -> None:
 
 # ===== Popup 'Thay Tướng' =====
 def handle_thay_tuong_popup(dev, ctx) -> bool:
-    """Chọn tướng theo giai đoạn rồi bấm 'Ra trận' ở đúng hàng của tướng đó. False nếu không thấy tướng."""
+    """Chọn tướng mục tiêu và nhấn 'Ra trận'; nếu chỉ có một nút trong popup thì dùng làm fallback."""
     from core import screens
-    screen = dev.screen()
 
+    screen = dev.screen()
     row = None
     for tpl in target_heroes(dev, ctx):
         row = vision.find_scaled(screen, tpl, 0.75)
         if row:
-            dev.log.info("Thấy tướng %s trong danh sách (điểm %.2f, tỉ lệ %.2f)", tpl, row[2], row[3])
+            dev.log.info(
+                "Thấy tướng %s trong danh sách (điểm %.2f, tỉ lệ %.2f)",
+                tpl, row[2], row[3],
+            )
             break
-    if not row:
-        dev.log.error("Không thấy tướng cần chọn trong danh sách Thay Tướng, đã lưu ảnh: %s",
-                      screens.save_unknown(dev, screen))
-        return False
-    rx, ry, _, scale = row
 
-    btns = vision.find_all(screen, "btn_ra_tran", 0.75, scale=scale)
-    if not btns:                                   # tỉ lệ nút lệch tỉ lệ tên -> tự dò lại
-        b = vision.find_scaled(screen, "btn_ra_tran", 0.75)
-        btns = [(b[0], b[1], b[2])] if b else []
-    # nút nằm cùng hàng, hơi thấp hơn tên (dy khoảng +66)
-    same_row = [b for b in btns if -30 <= b[1] - ry <= 130]
-    if not same_row:
-        dev.log.error("Không thấy nút Ra trận cùng hàng với tướng, đã lưu ảnh: %s", screens.save_unknown(dev, screen))
+    # Popup Thay Tướng nằm phía trên màn hình; giới hạn vùng để tránh khớp nút ở nền.
+    region_popup_rows = (300, 70, 1000, 360)
+    btns = vision.find_all(screen, "btn_ra_tran", 0.75, region=region_popup_rows)
+    if not btns:
+        # Nếu template được crop ở tỉ lệ khác, thử dò đa tỉ lệ.
+        button = vision.find_scaled(
+            screen, "btn_ra_tran", 0.72, region=region_popup_rows
+        )
+        if button:
+            btns = [(button[0], button[1], button[2])]
+
+    button = None
+    if row:
+        _, row_y, _, scale = row
+        # Ưu tiên nút Ra trận cùng hàng với tướng đã chọn.
+        same_row = [
+            candidate for candidate in btns
+            if -30 <= candidate[1] - row_y <= 130
+        ]
+        if same_row:
+            button = min(
+                same_row,
+                key=lambda candidate: abs(candidate[1] - row_y - 66),
+            )
+
+    # Ảnh hiện tại chỉ có một tướng trong popup. Nếu template hàng tướng không
+    # khớp nhưng chỉ có một nút Ra trận, vẫn có thể chọn an toàn nút duy nhất đó.
+    if button is None and len(btns) == 1:
+        button = btns[0]
+        dev.log.warning(
+            "Không ghép được hàng tướng với nút; dùng nút Ra trận duy nhất trong popup"
+        )
+
+    if button is None:
+        path = screens.save_unknown(dev, screen)
+        dev.log.error(
+            "Không xác định được nút Ra trận an toàn (tìm thấy %d nút); đã lưu ảnh: %s",
+            len(btns), path,
+        )
         return False
-    bx, by, _ = min(same_row, key=lambda b: abs(b[1] - ry - 66))
-    dev.log.info("Bấm Ra trận (%d,%d)", bx, by)
+
+    bx, by, score = button
+    dev.log.info("Nhấn Ra trận tại (%d, %d), điểm khớp %.2f", bx, by, score)
     dev.tap(bx, by)
 
-    end = time.time() + 6
-    while time.time() < end:
-        time.sleep(0.7)
+    # Chỉ xác nhận thành công khi popup thực sự biến mất.
+    deadline = time.time() + 8
+    while time.time() < deadline:
+        time.sleep(0.5)
         if screens.detect(dev) != "thay_tuong":
             ctx["equipped"] = ctx.get("equipped", 0) + 1
+            dev.log.info("Đã xác minh popup Thay Tướng đóng sau khi nhấn Ra trận")
             return True
-    dev.log.error("Bấm Ra trận nhưng popup vẫn còn")
+
+    dev.log.error("Đã nhấn Ra trận nhưng popup vẫn còn; lưu ảnh để debug: %s",
+                  screens.save_unknown(dev))
     return False
