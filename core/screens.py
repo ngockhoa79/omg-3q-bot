@@ -17,10 +17,12 @@ TEMPLATE_DIR = vision.TEMPLATE_DIR
 #  ngưỡng None = ngưỡng mặc định; tỉ lệ None = chỉ thử 1.0
 SCREENS = [
     ("login",           "btn_vao_game",          (450, 540, 830, 700),  None, None),
-    ("popup_tap_close", "txt_nhan_vung_trong",   (300, 640, 980, 720),  None, None),
     ("banner",          "btn_den",               (600, 560, 1000, 713), None, None),
     ("hero_select",     "scr_chon_tuong",        None,                  0.7,  None),
-    ("thay_tuong",      "scr_thay_tuong",        (300, 0, 980, 100),    0.8,  vision.SCALES_WIDE),  # popup chọn tướng ra trận
+    # Popup Thay Tướng phải được ưu tiên trước popup đóng chung vì popup này
+    # có thể đồng thời hiển thị dòng chữ ở vùng đáy màn hình.
+    ("thay_tuong",      "scr_thay_tuong",        (300, 0, 980, 100),    0.8,  vision.SCALES_WIDE),
+    ("popup_tap_close", "txt_nhan_vung_trong",   (300, 640, 980, 720),  None, None),
     ("doi_hinh",        "scr_doi_hinh",          (100, 0, 300, 56),     None, None),
     ("hanh_thuong",     "scr_hanh_thuong",       (100, 10, 260, 66),    None, None),
     ("time_machine",    "scr_co_may_thoi_gian",  (0, 170, 130, 290),    None, None),   # màn chính sự kiện
