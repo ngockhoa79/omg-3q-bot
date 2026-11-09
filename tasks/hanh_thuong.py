@@ -36,14 +36,17 @@ def open_hanh_thuong(dev, timeout=6) -> bool:
 def handle_event_main(dev, ctx) -> bool:
     """Ở màn chính sự kiện. Trả về True nếu đã xong (không còn gì để nhận)."""
     if ctx.get("ht_visits", 0) >= 2:
-        dev.log.warning("Đã vào Hành Thương 2 lần, dừng để tránh lặp")
-        return True
+        dev.log.error("Đã thử mở Hành Thương 2 lần nhưng chưa xác minh hoàn tất")
+        return False
     if not hanh_thuong_red_dot(dev):
         dev.log.info("Hành Thương không còn chấm đỏ -> xong")
         return True
-    ctx["ht_visits"] = ctx.get("ht_visits", 0) + 1
     ctx["qua_clicks"] = 0
-    open_hanh_thuong(dev)
+    if not open_hanh_thuong(dev):
+        ctx["ht_visits"] = ctx.get("ht_visits", 0) + 1
+        dev.log.warning("Không mở được Hành Thương (lần thử %d)", ctx["ht_visits"])
+        return False
+    ctx["ht_visits"] = ctx.get("ht_visits", 0) + 1
     return False
 
 
