@@ -16,17 +16,21 @@ TEMPLATE_DIR = vision.TEMPLATE_DIR
 # (tên màn hình, template, vùng tìm, ngưỡng, danh sách tỉ lệ thử)
 #  ngưỡng None = ngưỡng mặc định; tỉ lệ None = chỉ thử 1.0
 SCREENS = [
-    ("login",           "btn_vao_game",          (450, 540, 830, 700),  None, None),
+    ("thong_bao",       "scr_thong_bao",         (480, 0, 800, 70),     None, None),   # popup 'THÔNG BÁO' có nút Đồng ý
+    # Popup có tiêu đề riêng phải đứng TRƯỚC popup_tap_close, vì nhiều popup cũng có dòng 'Nhấn vào vùng trống để tắt đi'
+    ("thay_tuong",      "scr_thay_tuong",        (300, 0, 980, 100),    0.8,  vision.SCALES_WIDE),  # popup chọn tướng ra trận
+    ("popup_tap_close", "txt_nhan_vung_trong",   (300, 640, 980, 720),  None, None),
     ("banner",          "btn_den",               (600, 560, 1000, 713), None, None),
     ("hero_select",     "scr_chon_tuong",        None,                  0.7,  None),
-    # Popup Thay Tướng phải được ưu tiên trước popup đóng chung vì popup này
-    # có thể đồng thời hiển thị dòng chữ ở vùng đáy màn hình.
-    ("thay_tuong",      "scr_thay_tuong",        (300, 0, 980, 100),    0.8,  vision.SCALES_WIDE),
-    ("popup_tap_close", "txt_nhan_vung_trong",   (300, 640, 980, 720),  None, None),
     ("doi_hinh",        "scr_doi_hinh",          (100, 0, 300, 56),     None, None),
     ("hanh_thuong",     "scr_hanh_thuong",       (100, 10, 260, 66),    None, None),
     ("time_machine",    "scr_co_may_thoi_gian",  (0, 170, 130, 290),    None, None),   # màn chính sự kiện
+    ("chon_server",     "scr_chon_server",       None,                  0.8,  vision.SCALES_WIDE),  # bảng 'Chọn server'
+    ("zing_login",      "scr_zing_login",        (380, 170, 900, 240),  None, None),   # form nhập ZingID
+    ("vng_account",     "btn_zingid",            (380, 250, 920, 370),  None, None),   # bảng chọn Facebook/ZingID
+    ("login",           "btn_vao_game",          (450, 540, 830, 700),  None, None),   # màn hình đăng nhập chính
     ("home",            "marker_man_hinh_chinh", (600, 0, 780, 70),     None, None),
+    ("android_home",    "icon_omg3q_launcher",   None,                  0.8,  None),   # đang ở màn hình Android (game đã thoát)
 ]
 
 

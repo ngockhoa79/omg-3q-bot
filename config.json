@@ -1,9 +1,26 @@
 {
   "adb_path": "D:/LDPlayer/LDPlayer9/adb.exe",
+  "ld_console": "D:/LDPlayer/LDPlayer9/ldconsole.exe",
+  "package": "",
+  "accounts_file": "accounts.xlsx",
+  "instance_indexes": [1, 2, 3, 4],
+  "max_parallel": 4,
+  "process_statuses": ["Pending"],
+  "retry_statuses": ["Error", "LoginFailed"],
+  "account_timeout_sec": 900,
+  "boot_timeout_sec": 180,
+  "game_start_timeout_sec": 120,
+  "stagger_sec": [5, 20],
+  "between_accounts_sec": [3, 8],
+  "quit_when_done": false,
+  "apply_instance_settings": false,
+  "instance_cpu": 2,
+  "instance_memory": 2048,
+
   "ref_resolution": [1280, 720],
   "match_threshold": 0.85,
   "poll_interval": 0.7,
   "jitter_px": 6,
   "delay_range": [0.15, 0.45],
-  "serials": ["emulator-5554", "emulator-5556", "emulator-5558", "emulator-5560"]
+  "serials": ["emulator-5556", "emulator-5558", "emulator-5560", "emulator-5562"]
 }
